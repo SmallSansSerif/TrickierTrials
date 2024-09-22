@@ -1,6 +1,7 @@
 package de.t14d3.trickiertrials;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.TrialSpawnerSpawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -120,10 +122,7 @@ public class TrialSpawnerListener implements Listener {
 
     @EventHandler
     public void onSpawn(TrialSpawnerSpawnEvent event) {
-
-
-
-        final int[] gearScore = {0};  // Using an array to capture the effect of mutation
+        final int[] gearScore = {0};
         event.getTrialSpawner().getTrackedPlayers().forEach(player -> {
                     Arrays.stream(player.getEquipment().getArmorContents())
                             .filter(Objects::nonNull)
@@ -230,6 +229,7 @@ public class TrialSpawnerListener implements Listener {
                 entity.setCustomName("Default");
                 break;
         }
+        entity.getPersistentDataContainer().set(new NamespacedKey("trickiertrials", "trialspawned"), PersistentDataType.INTEGER, 1);
         entity.getServer().getLogger().info(TrialTiers.toString() + " , " + gearScore[0]);
     }
 

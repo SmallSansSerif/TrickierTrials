@@ -10,6 +10,7 @@ public final class TrickierTrials extends JavaPlugin {
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new TrialSpawnerListener(), this);
         this.getServer().getPluginManager().registerEvents(new TrialChamberProtector(this), this);
+        this.getServer().getPluginManager().registerEvents(new TrialDeathListener(), this);
 
     }
 

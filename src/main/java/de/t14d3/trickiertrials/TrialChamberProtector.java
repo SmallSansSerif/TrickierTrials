@@ -70,7 +70,7 @@ public class TrialChamberProtector implements Listener {
         Location blockLocation = block.getLocation();
 
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
-            if (structure.getBoundingBox().contains(blockLocation.toVector())) {
+            if (structure.getBoundingBox().contains(blockLocation.toVector()) && !TrialChamberBlocks.contains(block.getType())) {
                 placedBlocks.put(blockLocation, block.getBlockData());
                 new BukkitRunnable() {
                     @Override

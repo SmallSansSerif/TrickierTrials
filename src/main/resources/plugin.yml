@@ -1,0 +1,4 @@
+name: TrickierTrials
+version: '${version}'
+main: de.t14d3.trickiertrials.TrickierTrials
+api-version: '1.21'

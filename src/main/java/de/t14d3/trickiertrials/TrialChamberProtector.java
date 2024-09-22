@@ -37,7 +37,7 @@ public class TrialChamberProtector implements Listener {
         Location blockLocation = block.getLocation();
 
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
-            if (structure.getBoundingBox().contains(blockLocation.toVector())) {
+            if (structure.getBoundingBox().contains(blockLocation.toVector()) && TrialChamberBlocks.contains(block.getType())) {
 
                 brokenBlocks.put(blockLocation, block.getBlockData());
                 if (!placedBlocks.containsKey(blockLocation)) {
@@ -59,7 +59,7 @@ public class TrialChamberProtector implements Listener {
                             brokenBlocks.remove(blockLocation); // Remove after restoration
                         }
                     }
-                }.runTaskLater(plugin, 200);
+                }.runTaskLater(plugin, 200 + (long) (Math.random() * 100));
             }
         });
     }

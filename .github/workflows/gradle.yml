@@ -23,12 +23,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Create Release
+      - name: Create or Update Latest Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.run_number }}  # Create a version tag based on the run number
-          release_name: Release ${{ github.run_number }}
+          tag_name: latest  # Use 'latest' as the tag name
+          release_name: Latest Release
           draft: false
           prerelease: false
         env:
@@ -37,7 +37,7 @@ jobs:
       - name: Upload Release Artifacts
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.run_number }}  # Use the same tag for uploading the JAR
+          tag_name: latest  # Use 'latest' for uploading the JAR
           files: build/libs/*.jar  # Adjust this path based on your build output
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

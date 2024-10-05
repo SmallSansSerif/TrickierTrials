@@ -23,21 +23,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Create or Update Latest Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: latest  # Use 'latest' as the tag name
-          name: Latest Release
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Upload Release Artifacts
-        uses: softprops/action-gh-release@v1
+        uses: actions/upload-artifact@v3
         with:
-          tag_name: latest  # Use 'latest' for uploading the JAR
-          files: build/libs/*.jar  # Adjust this path based on your build output
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: build-artifacts
+          path: build/libs/*.jar

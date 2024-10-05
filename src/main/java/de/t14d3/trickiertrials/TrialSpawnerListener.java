@@ -34,7 +34,6 @@ public class TrialSpawnerListener implements Listener {
     public void healthMultiplier(LivingEntity entity, double healthMultiplier) {
         AttributeInstance maxHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         maxHealth.setBaseValue(maxHealth.getBaseValue() * healthMultiplier);
-
         entity.setHealth(maxHealth.getValue());
     }
 
@@ -43,7 +42,6 @@ public class TrialSpawnerListener implements Listener {
 
         switch (trialTiers) {
             case EXTREME:
-                // 80% chance for 1-2 diamond armor pieces, 50% chance for 1 netherite piece
                 assignArmorPiece(entity, 0.80, 0.50, Material.DIAMOND_HELMET, Material.NETHERITE_HELMET, "helmet");
                 assignArmorPiece(entity, 0.80, 0.50, Material.DIAMOND_CHESTPLATE, Material.NETHERITE_CHESTPLATE, "chestplate");
                 assignArmorPiece(entity, 0.80, 0.50, Material.DIAMOND_LEGGINGS, Material.NETHERITE_LEGGINGS, "leggings");
@@ -51,7 +49,6 @@ public class TrialSpawnerListener implements Listener {
                 break;
 
             case HARD:
-                // 60% for 2-3 iron armor pieces, 20% for leather, 5% for diamond
                 assignArmorPiece(entity, 0.60, 0.05, Material.IRON_HELMET, Material.DIAMOND_HELMET, Material.LEATHER_HELMET, 0.20, "helmet");
                 assignArmorPiece(entity, 0.60, 0.05, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE, Material.LEATHER_CHESTPLATE, 0.20, "chestplate");
                 assignArmorPiece(entity, 0.60, 0.05, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.LEATHER_LEGGINGS, 0.20, "leggings");
@@ -59,7 +56,6 @@ public class TrialSpawnerListener implements Listener {
                 break;
 
             case NORMAL:
-                // 20% for 1-2 leather, 10% for iron
                 assignArmorPiece(entity, 0.20, 0.10, Material.LEATHER_HELMET, Material.IRON_HELMET, "helmet");
                 assignArmorPiece(entity, 0.20, 0.10, Material.LEATHER_CHESTPLATE, Material.IRON_CHESTPLATE, "chestplate");
                 assignArmorPiece(entity, 0.20, 0.10, Material.LEATHER_LEGGINGS, Material.IRON_LEGGINGS, "leggings");
@@ -68,7 +64,6 @@ public class TrialSpawnerListener implements Listener {
 
             case DEFAULT:
             default:
-                // 25% chance for a single leather armor piece
                 assignArmorPiece(entity, 0.25, Material.LEATHER_HELMET, "helmet");
                 assignArmorPiece(entity, 0.25, Material.LEATHER_CHESTPLATE, "chestplate");
                 assignArmorPiece(entity, 0.25, Material.LEATHER_LEGGINGS, "leggings");
@@ -77,7 +72,6 @@ public class TrialSpawnerListener implements Listener {
         }
     }
 
-    // Method to assign specific armor pieces to their respective slots
     public void assignArmorPiece(LivingEntity entity, double primaryChance, double secondaryChance, Material primaryArmor, Material secondaryArmor, String armorSlot) {
         Random random = new Random();
         if (random.nextDouble() < primaryChance) {
@@ -87,7 +81,6 @@ public class TrialSpawnerListener implements Listener {
         }
     }
 
-    // Overloaded method to include a third armor piece (like leather for HARD)
     public void assignArmorPiece(LivingEntity entity, double primaryChance, double secondaryChance, Material primaryArmor, Material secondaryArmor, Material tertiaryArmor, double tertiaryChance, String armorSlot) {
         Random random = new Random();
         if (random.nextDouble() < primaryChance) {
@@ -99,7 +92,6 @@ public class TrialSpawnerListener implements Listener {
         }
     }
 
-    // Simplified method for single-piece assignment
     public void assignArmorPiece(LivingEntity entity, double chance, Material armor, String armorSlot) {
         Random random = new Random();
         if (random.nextDouble() < chance) {
@@ -107,7 +99,6 @@ public class TrialSpawnerListener implements Listener {
         }
     }
 
-    // Helper method to equip the armor to the correct slot
     public void equipArmor(LivingEntity entity, Material armor, String armorSlot) {
         switch (armorSlot) {
             case "helmet":
@@ -130,6 +121,7 @@ public class TrialSpawnerListener implements Listener {
         if (!strengthenTrialMobs) {
             return;
         }
+
         final int[] gearScore = {0};
         event.getTrialSpawner().getTrackedPlayers().forEach(player -> {
                     Arrays.stream(player.getEquipment().getArmorContents())
@@ -198,44 +190,60 @@ public class TrialSpawnerListener implements Listener {
                             });
                 });
 
-        TrialSpawnerListener.TrialTiers TrialTiers;
+        TrialTiers trialTiers;
         if (gearScore[0] >= 35) {
-            TrialTiers = TrialSpawnerListener.TrialTiers.EXTREME;
+            trialTiers = TrialTiers.EXTREME;
         } else if (gearScore[0] >= 20) {
-            TrialTiers = TrialSpawnerListener.TrialTiers.HARD;
+            trialTiers = TrialTiers.HARD;
         } else if (gearScore[0] >= 10) {
-            TrialTiers = TrialSpawnerListener.TrialTiers.NORMAL;
+            trialTiers = TrialTiers.NORMAL;
         } else {
-            TrialTiers = TrialSpawnerListener.TrialTiers.DEFAULT;
+            trialTiers = TrialTiers.DEFAULT;
         }
 
         event.getEntity().setGlowing(true);
 
         LivingEntity entity = (LivingEntity) event.getEntity();
-        switch (TrialTiers) {
+        switch (trialTiers) {
             case NORMAL:
-                healthMultiplier(entity, 1.5);  // Adjust health for NORMAL difficulty
-                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.NORMAL);  // Assign armor based on NORMAL difficulty
+                healthMultiplier(entity, 1.5);
+                assignArmorBasedOnDifficulty(entity, TrialTiers.NORMAL);
                 break;
 
             case HARD:
-                healthMultiplier(entity, 2);  // Adjust health for HARD difficulty
-                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.HARD);  // Assign armor based on HARD difficulty
+                healthMultiplier(entity, 2);
+                assignArmorBasedOnDifficulty(entity, TrialTiers.HARD);
                 break;
 
             case EXTREME:
-                healthMultiplier(entity, 3);  // Adjust health for EXTREME difficulty
-                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.EXTREME);  // Assign armor based on EXTREME difficulty
+                healthMultiplier(entity, 3);
+                assignArmorBasedOnDifficulty(entity, TrialTiers.EXTREME);
                 break;
 
             default:
-                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.DEFAULT);  // Assign minimal armor for default case
+                assignArmorBasedOnDifficulty(entity, TrialTiers.DEFAULT);
                 break;
         }
+
+        // Randomly assign a sword if the entity has no item in the main hand
+        assignRandomSword(entity);
+
         entity.getPersistentDataContainer().set(new NamespacedKey("trickiertrials", "trialspawned"), PersistentDataType.INTEGER, 1);
-        //entity.getServer().getLogger().info(TrialTiers.toString() + " , " + gearScore[0]);
     }
 
-
-
+    private void assignRandomSword(LivingEntity entity) {
+        Random random = new Random();
+        if (entity.getEquipment().getItemInMainHand().getType() == Material.AIR) { // Check if the main hand is empty
+            double chance = random.nextDouble();
+            if (chance < 0.20) {
+                entity.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+            } else if (chance < 0.30) {
+                entity.getEquipment().setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD));
+            } else if (chance < 0.40) {
+                entity.getEquipment().setItemInMainHand(new ItemStack(Material.NETHERITE_SWORD));
+            } else {
+                return;
+            }
+        }
+    }
 }

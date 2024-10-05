@@ -23,8 +23,21 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v3
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          name: build-artifacts
-          path: build/libs/*.jar  # Adjust this path based on your build output
+          tag_name: v${{ github.run_number }}  # Create a version tag based on the run number
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}  # Use the same tag for uploading the JAR
+          files: build/libs/*.jar  # Adjust this path based on your build output
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

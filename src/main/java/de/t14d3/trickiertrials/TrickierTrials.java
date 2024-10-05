@@ -1,13 +1,16 @@
 package de.t14d3.trickiertrials;
 
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class TrickierTrials extends JavaPlugin {
+public final class TrickierTrials extends JavaPlugin implements CommandExecutor {
 
     private List<Material> trialChamberMaterials;
 
@@ -22,6 +25,9 @@ public final class TrickierTrials extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new TrialSpawnerListener(this, strengthenTrialMobs), this);
         this.getServer().getPluginManager().registerEvents(new TrialChamberProtector(this, getTrialChamberMaterials(), decayPlacedBlocks, regenerateBrokenBlocks), this);
         this.getServer().getPluginManager().registerEvents(new TrialDeathListener(), this);
+
+        // Register command executor
+        this.getCommand("trickiertrials").setExecutor(this);
     }
 
     @Override
@@ -57,5 +63,24 @@ public final class TrickierTrials extends JavaPlugin {
 
     public List<Material> getTrialChamberMaterials() {
         return trialChamberMaterials;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("trickiertrials")) {
+            if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+                // Reload the configuration
+                reloadConfig();
+                loadTrialChamberMaterials(); // Reload trial chamber materials
+                loadConfigurationOptions(); // Reload other options
+                sender.sendMessage("Trickier Trials configuration reloaded successfully.");
+                return true;
+            } else {
+                // Handle other command logic here (if applicable)
+                sender.sendMessage("Usage: /trickiertrials reload");
+                return true;
+            }
+        }
+        return false;
     }
 }

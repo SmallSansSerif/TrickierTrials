@@ -17,18 +17,24 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 public class TrialChamberProtector implements Listener {
 
     private final JavaPlugin plugin;
+    private final List<Material> trialChamberMaterials;
+    private final boolean decayPlacedBlocks;
+    private final boolean regenerateBrokenBlocks;
 
     private final Map<Location, BlockData> brokenBlocks = new HashMap<>();
     private final Map<Location, BlockData> placedBlocks = new HashMap<>();
 
-    public TrialChamberProtector(JavaPlugin plugin) {
+    public TrialChamberProtector(JavaPlugin plugin, List<Material> trialChamberMaterials, boolean decayPlacedBlocks, boolean regenerateBrokenBlocks) {
         this.plugin = plugin;
+        this.trialChamberMaterials = trialChamberMaterials;
+        this.decayPlacedBlocks = decayPlacedBlocks;
+        this.regenerateBrokenBlocks = regenerateBrokenBlocks;
     }
 
     @EventHandler
@@ -37,29 +43,31 @@ public class TrialChamberProtector implements Listener {
         Location blockLocation = block.getLocation();
 
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
-            if (structure.getBoundingBox().contains(blockLocation.toVector()) && TrialChamberBlocks.contains(block.getType())) {
-
+            if (structure.getBoundingBox().contains(blockLocation.toVector()) && trialChamberMaterials.contains(block.getType())) {
                 brokenBlocks.put(blockLocation, block.getBlockData());
                 if (!placedBlocks.containsKey(blockLocation)) {
-                    event.setDropItems(false);
+                    event.setDropItems(!regenerateBrokenBlocks); // Prevent drops if regeneration is enabled
                 }
 
                 if (placedBlocks.containsKey(blockLocation)) {
                     placedBlocks.remove(blockLocation);
                     return;
                 }
-                // Schedule block restoration after 10 seconds (200 ticks)
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        // Restore the block
-                        Block brokenBlock = blockLocation.getBlock();
-                        if (brokenBlocks.containsKey(blockLocation) && !placedBlocks.containsKey(blockLocation)) {
-                            brokenBlock.setBlockData(brokenBlocks.get(blockLocation));
-                            brokenBlocks.remove(blockLocation); // Remove after restoration
+
+                // Schedule block restoration after 10 seconds (200 ticks) if regeneration is enabled
+                if (regenerateBrokenBlocks) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            // Restore the block
+                            Block brokenBlock = blockLocation.getBlock();
+                            if (brokenBlocks.containsKey(blockLocation) && !placedBlocks.containsKey(blockLocation)) {
+                                brokenBlock.setBlockData(brokenBlocks.get(blockLocation));
+                                brokenBlocks.remove(blockLocation); // Remove after restoration
+                            }
                         }
-                    }
-                }.runTaskLater(plugin, 200 + (long) (Math.random() * 100));
+                    }.runTaskLater(plugin, 200 + (long) (Math.random() * 100));
+                }
             }
         });
     }
@@ -70,18 +78,20 @@ public class TrialChamberProtector implements Listener {
         Location blockLocation = block.getLocation();
 
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
-            if (structure.getBoundingBox().contains(blockLocation.toVector()) && !TrialChamberBlocks.contains(block.getType())) {
+            if (structure.getBoundingBox().contains(blockLocation.toVector()) && !trialChamberMaterials.contains(block.getType())) {
                 placedBlocks.put(blockLocation, block.getBlockData());
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        Block placedBlock = blockLocation.getBlock();
-                        if (placedBlocks.containsKey(blockLocation)) {
-                            placedBlock.setBlockData(Material.AIR.createBlockData());
-                            placedBlocks.remove(blockLocation); // Remove after restoration
+                if (decayPlacedBlocks) { // Check for decay option
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            Block placedBlock = blockLocation.getBlock();
+                            if (placedBlocks.containsKey(blockLocation)) {
+                                placedBlock.setBlockData(Material.AIR.createBlockData());
+                                placedBlocks.remove(blockLocation); // Remove after restoration
+                            }
                         }
-                    }
-                }.runTaskLater(plugin, 200);
+                    }.runTaskLater(plugin, 200);
+                }
             }
         });
     }
@@ -93,12 +103,9 @@ public class TrialChamberProtector implements Listener {
 
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
             if (structure.getBoundingBox().contains(blockLocation.toVector())) {
-
                 Player player = (Player) event.getEntity();
                 player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 10, 1, false, false));
             }
         });
     }
-
-
 }

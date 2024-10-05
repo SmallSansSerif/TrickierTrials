@@ -4,20 +4,25 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.TrialSpawnerSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class TrialSpawnerListener implements Listener {
+
+    private final boolean strengthenTrialMobs;
+
+    public TrialSpawnerListener(JavaPlugin plugin, boolean strengthenTrialMobs) {
+        this.strengthenTrialMobs = strengthenTrialMobs;
+    }
 
     public enum TrialTiers {
         DEFAULT,
@@ -122,6 +127,9 @@ public class TrialSpawnerListener implements Listener {
 
     @EventHandler
     public void onSpawn(TrialSpawnerSpawnEvent event) {
+        if (!strengthenTrialMobs) {
+            return;
+        }
         final int[] gearScore = {0};
         event.getTrialSpawner().getTrackedPlayers().forEach(player -> {
                     Arrays.stream(player.getEquipment().getArmorContents())
@@ -204,33 +212,28 @@ public class TrialSpawnerListener implements Listener {
         event.getEntity().setGlowing(true);
 
         LivingEntity entity = (LivingEntity) event.getEntity();
-        //entity.getEquipment().setItemInHand(new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_SWORD));
         switch (TrialTiers) {
             case NORMAL:
                 healthMultiplier(entity, 1.5);  // Adjust health for NORMAL difficulty
-                assignArmorBasedOnDifficulty(entity, TrialTiers.NORMAL);  // Assign armor based on NORMAL difficulty
-                entity.setCustomName("Normal");  // Set custom name for identification
+                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.NORMAL);  // Assign armor based on NORMAL difficulty
                 break;
 
             case HARD:
                 healthMultiplier(entity, 2);  // Adjust health for HARD difficulty
-                assignArmorBasedOnDifficulty(entity, TrialTiers.HARD);  // Assign armor based on HARD difficulty
-                entity.setCustomName("Hard");  // Set custom name for identification
+                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.HARD);  // Assign armor based on HARD difficulty
                 break;
 
             case EXTREME:
                 healthMultiplier(entity, 3);  // Adjust health for EXTREME difficulty
-                assignArmorBasedOnDifficulty(entity, TrialTiers.EXTREME);  // Assign armor based on EXTREME difficulty
-                entity.setCustomName("Extreme");  // Set custom name for identification
+                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.EXTREME);  // Assign armor based on EXTREME difficulty
                 break;
 
             default:
-                assignArmorBasedOnDifficulty(entity, TrialTiers.DEFAULT);  // Assign minimal armor for default case
-                entity.setCustomName("Default");
+                assignArmorBasedOnDifficulty(entity, TrialSpawnerListener.TrialTiers.DEFAULT);  // Assign minimal armor for default case
                 break;
         }
         entity.getPersistentDataContainer().set(new NamespacedKey("trickiertrials", "trialspawned"), PersistentDataType.INTEGER, 1);
-        entity.getServer().getLogger().info(TrialTiers.toString() + " , " + gearScore[0]);
+        //entity.getServer().getLogger().info(TrialTiers.toString() + " , " + gearScore[0]);
     }
 
 

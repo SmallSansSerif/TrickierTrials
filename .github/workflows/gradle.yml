@@ -28,7 +28,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest  # Use 'latest' as the tag name
-          release_name: Latest Release
+          name: Latest Release
           draft: false
           prerelease: false
         env:

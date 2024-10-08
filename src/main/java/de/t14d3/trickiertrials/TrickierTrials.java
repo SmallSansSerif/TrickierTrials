@@ -25,6 +25,7 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
         this.getServer().getPluginManager().registerEvents(new TrialSpawnerListener(this, strengthenTrialMobs), this);
         this.getServer().getPluginManager().registerEvents(new TrialChamberProtector(this, getTrialChamberMaterials(), decayPlacedBlocks, regenerateBrokenBlocks), this);
         this.getServer().getPluginManager().registerEvents(new TrialDeathListener(), this);
+        //this.getServer().getPluginManager().registerEvents(new TrialVaultRefresher(), this);
 
         // Register command executor
         this.getCommand("trickiertrials").setExecutor(this);

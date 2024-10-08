@@ -1,9 +1,11 @@
 package de.t14d3.trickiertrials;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Breeze;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,6 +37,11 @@ public class TrialSpawnerListener implements Listener {
         AttributeInstance maxHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         maxHealth.setBaseValue(maxHealth.getBaseValue() * healthMultiplier);
         entity.setHealth(maxHealth.getValue());
+    }
+
+    public void damageMultiplier(LivingEntity entity, double damageMultiplier) {
+        AttributeInstance attackDamage = entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+        attackDamage.setBaseValue(attackDamage.getBaseValue() * damageMultiplier);
     }
 
     public void assignArmorBasedOnDifficulty(LivingEntity entity, TrialTiers trialTiers) {
@@ -113,6 +120,22 @@ public class TrialSpawnerListener implements Listener {
             case "boots":
                 entity.getEquipment().setBoots(new ItemStack(armor));
                 break;
+        }
+    }
+
+    private void assignRandomSword(LivingEntity entity) {
+        Random random = new Random();
+        if (entity.getEquipment().getItemInMainHand().getType() == Material.AIR) { // Check if the main hand is empty
+            double chance = random.nextDouble();
+            if (chance < 0.20) {
+                entity.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+            } else if (chance < 0.30) {
+                entity.getEquipment().setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD));
+            } else if (chance < 0.40) {
+                entity.getEquipment().setItemInMainHand(new ItemStack(Material.NETHERITE_SWORD));
+            } else {
+                return;
+            }
         }
     }
 
@@ -212,11 +235,13 @@ public class TrialSpawnerListener implements Listener {
 
             case HARD:
                 healthMultiplier(entity, 2);
+                damageMultiplier(entity, 2);
                 assignArmorBasedOnDifficulty(entity, TrialTiers.HARD);
                 break;
 
             case EXTREME:
                 healthMultiplier(entity, 3);
+                damageMultiplier(entity, 3);
                 assignArmorBasedOnDifficulty(entity, TrialTiers.EXTREME);
                 break;
 
@@ -229,21 +254,14 @@ public class TrialSpawnerListener implements Listener {
         assignRandomSword(entity);
 
         entity.getPersistentDataContainer().set(new NamespacedKey("trickiertrials", "trialspawned"), PersistentDataType.INTEGER, 1);
-    }
 
-    private void assignRandomSword(LivingEntity entity) {
-        Random random = new Random();
-        if (entity.getEquipment().getItemInMainHand().getType() == Material.AIR) { // Check if the main hand is empty
-            double chance = random.nextDouble();
-            if (chance < 0.20) {
-                entity.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
-            } else if (chance < 0.30) {
-                entity.getEquipment().setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD));
-            } else if (chance < 0.40) {
-                entity.getEquipment().setItemInMainHand(new ItemStack(Material.NETHERITE_SWORD));
-            } else {
-                return;
-            }
+
+        // Easter Egg
+        if (entity instanceof Breeze && RandomUtils.nextDouble(0, 1) < 0.05) {
+            entity.setCustomName("Klein Tiade");
+            entity.setCustomNameVisible(true);
+            healthMultiplier(entity, 4);
+            entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(1.2);
         }
     }
 }

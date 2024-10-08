@@ -104,7 +104,7 @@ public class TrialChamberProtector implements Listener {
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
             if (structure.getBoundingBox().contains(blockLocation.toVector())) {
                 Player player = (Player) event.getEntity();
-                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 10, 1, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 10, 2, false, false));
             }
         });
     }

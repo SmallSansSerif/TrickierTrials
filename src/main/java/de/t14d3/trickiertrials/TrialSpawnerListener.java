@@ -229,18 +229,18 @@ public class TrialSpawnerListener implements Listener {
         LivingEntity entity = (LivingEntity) event.getEntity();
         switch (trialTiers) {
             case NORMAL:
-                healthMultiplier(entity, 1.5);
+                healthMultiplier(entity, 1.1);
                 assignArmorBasedOnDifficulty(entity, TrialTiers.NORMAL);
                 break;
 
             case HARD:
-                healthMultiplier(entity, 2);
+                healthMultiplier(entity, 1.5);
                 damageMultiplier(entity, 2);
                 assignArmorBasedOnDifficulty(entity, TrialTiers.HARD);
                 break;
 
             case EXTREME:
-                healthMultiplier(entity, 3);
+                healthMultiplier(entity, 2);
                 damageMultiplier(entity, 3);
                 assignArmorBasedOnDifficulty(entity, TrialTiers.EXTREME);
                 break;

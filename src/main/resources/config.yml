@@ -33,3 +33,5 @@ blocks-to-protect:
 decay-placed-blocks: true
 regenerate-broken-blocks: true
 strengthen-trial-mobs: true
+
+trial-vault-reset-time: 86400000 # Time in Milliseconds, set to -1 to disable. Default is 24 hours (1000 * 60 * 60 * 24 = 86400000)

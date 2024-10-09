@@ -25,7 +25,7 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
         this.getServer().getPluginManager().registerEvents(new TrialSpawnerListener(this, strengthenTrialMobs), this);
         this.getServer().getPluginManager().registerEvents(new TrialChamberProtector(this, getTrialChamberMaterials(), decayPlacedBlocks, regenerateBrokenBlocks), this);
         this.getServer().getPluginManager().registerEvents(new TrialDeathListener(), this);
-        //this.getServer().getPluginManager().registerEvents(new TrialVaultRefresher(), this);
+        this.getServer().getPluginManager().registerEvents(new TrialVaultRefresher(this, trialVaultResetTime), this);
 
         // Register command executor
         this.getCommand("trickiertrials").setExecutor(this);
@@ -55,11 +55,14 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
     private boolean regenerateBrokenBlocks;
     private boolean strengthenTrialMobs;
 
+    private long trialVaultResetTime;
+
     private void loadConfigurationOptions() {
         FileConfiguration config = getConfig();
         decayPlacedBlocks = config.getBoolean("decay-placed-blocks", true);
         regenerateBrokenBlocks = config.getBoolean("regenerate-broken-blocks", true);
         strengthenTrialMobs = config.getBoolean("strengthen-trial-mobs", true);
+        trialVaultResetTime = config.getLong("trial-vault-reset-time", 86400000L);
     }
 
     public List<Material> getTrialChamberMaterials() {

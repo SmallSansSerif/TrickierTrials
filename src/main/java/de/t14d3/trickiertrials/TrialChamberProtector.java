@@ -66,7 +66,7 @@ public class TrialChamberProtector implements Listener {
                                 brokenBlocks.remove(blockLocation); // Remove after restoration
                             }
                         }
-                    }.runTaskLater(plugin, 200 + (long) (Math.random() * 100));
+                    }.runTaskLater(plugin, plugin.getConfig().getInt("regenerate-delay") * 20L + (long) (Math.random() * 100));
                 }
             }
         });
@@ -90,7 +90,7 @@ public class TrialChamberProtector implements Listener {
                                 placedBlocks.remove(blockLocation); // Remove after restoration
                             }
                         }
-                    }.runTaskLater(plugin, 200);
+                    }.runTaskLater(plugin, plugin.getConfig().getInt("decay-delay") * 20L); // Delay in seconds * 20 ticks
                 }
             }
         });
@@ -104,7 +104,7 @@ public class TrialChamberProtector implements Listener {
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
             if (structure.getBoundingBox().contains(blockLocation.toVector())) {
                 Player player = (Player) event.getEntity();
-                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 10, 2, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 10, plugin.getConfig().getInt("mining-fatigue-level", 2)));
             }
         });
     }

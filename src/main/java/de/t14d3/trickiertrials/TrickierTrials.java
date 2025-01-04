@@ -63,6 +63,17 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
         regenerateBrokenBlocks = config.getBoolean("regenerate-broken-blocks", true);
         strengthenTrialMobs = config.getBoolean("strengthen-trial-mobs", true);
         trialVaultResetTime = config.getLong("trial-vault-reset-time", 86400000L);
+
+        // Config migrator
+        if (config.get("decay-delay") == null) {
+            config.set("decay-delay", "10 #Decay delay in seconds");
+        }
+        if (config.get("regenerate-delay") == null) {
+            config.set("regenerate-delay", "10 #Regeneration delay in seconds, plus a random delay of up to 100 ticks");
+        }
+        if (config.get("mining-fatigue-level") == null) {
+            config.set("mining-fatigue-level", 2);
+        }
     }
 
     public List<Material> getTrialChamberMaterials() {

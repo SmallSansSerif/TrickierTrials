@@ -21,9 +21,15 @@ import java.util.Random;
 public class TrialSpawnerListener implements Listener {
 
     private final boolean strengthenTrialMobs;
+    private final boolean glowingEffect;
+    private final boolean secret;
+    private final String secretName;
 
-    public TrialSpawnerListener(JavaPlugin plugin, boolean strengthenTrialMobs) {
+    public TrialSpawnerListener(JavaPlugin plugin, boolean strengthenTrialMobs, boolean glowingEffect, boolean secret, String secretName) {
         this.strengthenTrialMobs = strengthenTrialMobs;
+        this.glowingEffect = glowingEffect;
+        this.secret = secret;
+        this.secretName = secretName;
     }
 
     public enum TrialTiers {
@@ -224,7 +230,9 @@ public class TrialSpawnerListener implements Listener {
             trialTiers = TrialTiers.DEFAULT;
         }
 
-        event.getEntity().setGlowing(true);
+        if (glowingEffect) {
+            event.getEntity().setGlowing(true);
+        }
 
         LivingEntity entity = (LivingEntity) event.getEntity();
         switch (trialTiers) {
@@ -257,8 +265,8 @@ public class TrialSpawnerListener implements Listener {
 
 
         // Easter Egg
-        if (entity instanceof Breeze && RandomUtils.nextDouble(0, 1) < 0.05) {
-            entity.setCustomName("Klein Tiade");
+        if (secret && entity instanceof Breeze && RandomUtils.nextDouble(0, 1) < 0.05) {
+            entity.setCustomName(secretName);
             entity.setCustomNameVisible(true);
             healthMultiplier(entity, 4);
             entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(1.2);

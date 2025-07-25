@@ -14,6 +14,15 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
 
     private List<Material> trialChamberMaterials;
 
+    private boolean decayPlacedBlocks;
+    private boolean regenerateBrokenBlocks;
+    private boolean strengthenTrialMobs;
+    private boolean glowingEffect;
+    private boolean secret;
+    private String secretName;
+
+    private long trialVaultResetTime;
+
     @Override
     public void onEnable() {
         // Load configuration
@@ -22,7 +31,7 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
         loadConfigurationOptions(); // Load decay and regeneration settings
 
         // Register event listeners
-        this.getServer().getPluginManager().registerEvents(new TrialSpawnerListener(this, strengthenTrialMobs), this);
+        this.getServer().getPluginManager().registerEvents(new TrialSpawnerListener(this, strengthenTrialMobs, glowingEffect, secret, secretName), this);
         this.getServer().getPluginManager().registerEvents(new TrialChamberProtector(this, getTrialChamberMaterials(), decayPlacedBlocks, regenerateBrokenBlocks), this);
         this.getServer().getPluginManager().registerEvents(new TrialDeathListener(), this);
         this.getServer().getPluginManager().registerEvents(new TrialVaultRefresher(this, trialVaultResetTime), this);
@@ -51,18 +60,15 @@ public final class TrickierTrials extends JavaPlugin implements CommandExecutor 
         }
     }
 
-    private boolean decayPlacedBlocks;
-    private boolean regenerateBrokenBlocks;
-    private boolean strengthenTrialMobs;
-
-    private long trialVaultResetTime;
-
     private void loadConfigurationOptions() {
         FileConfiguration config = getConfig();
         decayPlacedBlocks = config.getBoolean("decay-placed-blocks", true);
         regenerateBrokenBlocks = config.getBoolean("regenerate-broken-blocks", true);
         strengthenTrialMobs = config.getBoolean("strengthen-trial-mobs", true);
         trialVaultResetTime = config.getLong("trial-vault-reset-time", 86400000L);
+        glowingEffect = config.getBoolean("modules.glowing-effect", true);
+        secret = config.getBoolean("easter-egg", false);
+        secretName = config.getString("easter-egg-name", "Klein Tiade");
 
         // Config migrator
         if (config.get("decay-delay") == null) {

@@ -98,6 +98,8 @@ public class TrialChamberProtector implements Listener {
 
     @EventHandler
     public void onBlockBreakStart(BlockBreakProgressUpdateEvent event) {
+        if (plugin.getConfig().getInt("modules.mining-fatigue") <= 0) return;
+
         Block block = event.getBlock();
         Location blockLocation = block.getLocation();
 

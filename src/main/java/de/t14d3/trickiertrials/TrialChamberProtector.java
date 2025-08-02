@@ -78,7 +78,7 @@ public class TrialChamberProtector implements Listener {
         Location blockLocation = block.getLocation();
 
         block.getChunk().getStructures(Structure.TRIAL_CHAMBERS).forEach(structure -> {
-            if (structure.getBoundingBox().contains(blockLocation.toVector()) && !trialChamberMaterials.contains(block.getType())) {
+            if (structure.getBoundingBox().contains(blockLocation.toVector())) {
                 placedBlocks.put(blockLocation, block.getBlockData());
                 if (decayPlacedBlocks) { // Check for decay option
                     new BukkitRunnable() {

@@ -30,6 +30,9 @@ blocks-to-protect:
   - WAXED_WEATHERED_COPPER_BULB
   - WAXED_OXIDIZED_COPPER_BULB
 
+regeneration-excluded-materials:
+  - HOPPER
+
 glowing-effect: true
 mining-fatigue-level: 2 # Set to 0 to disable
 

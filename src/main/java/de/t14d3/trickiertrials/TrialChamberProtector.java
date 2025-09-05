@@ -62,7 +62,15 @@ public class TrialChamberProtector implements Listener {
                             // Restore the block
                             Block brokenBlock = blockLocation.getBlock();
                             if (brokenBlocks.containsKey(blockLocation) && !placedBlocks.containsKey(blockLocation)) {
-                                brokenBlock.setBlockData(brokenBlocks.get(blockLocation));
+                            org.bukkit.block.data.BlockData _origData = brokenBlocks.get(blockLocation);
+                            org.bukkit.Material _origMat = _origData.getMaterial();
+                            java.util.List<String> _excluded = plugin.getConfig().getStringList("regeneration-excluded-materials");
+                            if (_excluded != null && _excluded.stream().anyMatch(s -> s.equalsIgnoreCase(_origMat.name()))) {
+                                // Do not regenerate this block; clear it instead
+                                brokenBlock.setBlockData(org.bukkit.Material.AIR.createBlockData());
+                            } else {
+                                brokenBlock.setBlockData(_origData);
+                            }
                                 brokenBlocks.remove(blockLocation); // Remove after restoration
                             }
                         }
